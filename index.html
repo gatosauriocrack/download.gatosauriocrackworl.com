@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Descargar Videos de Threads, Instagram, YouTube y X - Gatosauriocrack</title>
     <meta name="description" content="Herramienta gratuita para extraer videos y fotos de redes sociales directamente desde tu dispositivo. Privado y rápido.">
     <meta name="keywords" content="descargar video threads, descargar video instagram, youtube mp4, extractor videos x twitter">
-
     <link rel="icon" type="image/png" href="download.png">
     <link rel="apple-touch-icon" href="download.png">
-
     <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
-    
     <style>
         @font-face {
             font-family: 'FontAwesome-Gatosauriocrack';
             src: url('https://oc.gatosauriocrackworl.com/fonts/FontAwesome-Gatosauriocrack.ttf') format('truetype');
         }
-
+        .icon-meli-icono:before { 
+            content: "\e900"; 
+            font-family: 'FontAwesome-Gatosauriocrack' !important;
+            font-style: normal;
+            font-weight: normal;
+            font-size: 90px;
+            color: #000000;
+        }
         :root {
             --primary: #EA7900;
             --bg: #000000;
@@ -26,7 +29,6 @@
             --input: #1a1a1a;
             --text: #ffffff;
         }
-
         body, html {
             margin: 0;
             padding: 0;
@@ -34,10 +36,9 @@
             color: var(--text);
             font-family: 'Segoe UI', Roboto, sans-serif;
         }
-
         .header-bar {
             background-color: var(--primary);
-            height: 80px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -48,15 +49,13 @@
             z-index: 100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.5);
             box-sizing: border-box;
-            gap: 12px;
+            gap: 10px;
         }
-
         .header-logo {
             height: 50px;
             width: auto;
             object-fit: contain;
         }
-
         h1 {
             font-size: 1.2rem;
             color: #000000;
@@ -65,14 +64,12 @@
             font-weight: 900;
             text-align: left;
         }
-
         .container {
             padding: 120px 20px 40px;
             max-width: 500px;
             margin: auto;
             text-align: center;
         }
-
         h2 {
             font-size: 1rem;
             text-transform: uppercase;
@@ -82,12 +79,10 @@
             padding-bottom: 10px;
             margin-bottom: 30px;
         }
-
         .form-group {
             margin-bottom: 20px;
             text-align: left;
         }
-
         label {
             display: block;
             font-size: 0.75rem;
@@ -96,7 +91,6 @@
             text-transform: uppercase;
             font-weight: bold;
         }
-
         input {
             width: 100%;
             padding: 15px;
@@ -107,9 +101,7 @@
             box-sizing: border-box;
             font-size: 1rem;
         }
-
         input:focus { border-color: var(--primary); outline: none; }
-
         .btn-main {
             background: var(--primary);
             color: #000;
@@ -123,19 +115,16 @@
             text-transform: uppercase;
             transition: 0.3s;
         }
-
         .btn-main:disabled {
             background: #555;
             cursor: not-allowed;
         }
-
         #status {
             margin-top: 20px;
             font-size: 0.8rem;
             color: #777;
             text-transform: uppercase;
         }
-
         .result-box {
             margin-top: 30px;
             padding: 20px;
@@ -143,7 +132,6 @@
             border-radius: 12px;
             border: 1px dashed var(--primary);
         }
-
         .download-link {
             display: block;
             background: #ffffff;
@@ -158,38 +146,29 @@
     </style>
 </head>
 <body>
-
     <header class="header-bar">
-        <img src="download.png" alt="Download Logo" class="header-logo">
+        <i class="icon-meli-icono"></i>
         <h1>Download</h1>
     </header>
-
     <div class="container">
         <h2>Extraer de Redes Sociales</h2>
-        
         <div class="form-group">
             <label>Links de Threads, YouTube, Instagram o X:</label>
             <input type="text" id="urlInput" placeholder="https://...">
         </div>
-
         <button id="btnAction" class="btn-main" onclick="ejecutarExtraccion()" disabled>Cargando Motor...</button>
-        
         <div id="status">Iniciando Python en el dispositivo...</div>
-        
         <div id="resultContainer"></div>
     </div>
-
     <script>
         let pyodide;
         let isReady = false;
-
         async function init() {
             try {
                 pyodide = await loadPyodide();
                 await pyodide.loadPackage("micropip");
                 const micropip = pyodide.pyimport("micropip");
                 await micropip.install('yt-dlp');
-                
                 isReady = true;
                 document.getElementById('status').innerText = "Listo para procesar";
                 document.getElementById('btnAction').innerText = "Extraer ahora";
@@ -198,27 +177,21 @@
                 document.getElementById('status').innerText = "Error al iniciar motor";
             }
         }
-
         async function ejecutarExtraccion() {
             const url = document.getElementById('urlInput').value;
             if(!url) return;
-
             const btn = document.getElementById('btnAction');
             const status = document.getElementById('status');
             const resContainer = document.getElementById('resultContainer');
-
             btn.disabled = true;
             btn.innerText = "PROCESANDO...";
             status.innerText = "Buscando archivo original...";
             resContainer.innerHTML = "";
-
             const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
-
             try {
                 const pythonCode = `
 import yt_dlp
 import json
-
 def extract(link):
     ydl_opts = {'quiet': True, 'format': 'best', 'skip_download': True}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -231,13 +204,9 @@ def extract(link):
             })
         except Exception as e:
             return json.dumps({"error": str(e)})
-
-extract("${proxyUrl}")
-                `;
-
+extract("${proxyUrl}")`;
                 const resultJSON = await pyodide.runPythonAsync(pythonCode);
                 const res = JSON.parse(resultJSON);
-
                 if(res.error) {
                     status.innerText = "Error: No se encontró el medio.";
                 } else {
@@ -247,8 +216,7 @@ extract("${proxyUrl}")
                             <label>Archivo listo:</label>
                             <div style="font-size:0.8rem; margin-bottom:15px; color:#ccc;">${res.title}</div>
                             <a href="${res.url}" target="_blank" class="download-link" download>Descargar ${res.ext.toUpperCase()}</a>
-                        </div>
-                    `;
+                        </div>`;
                 }
             } catch (err) {
                 status.innerText = "Error de conexión con el proxy";
@@ -257,7 +225,6 @@ extract("${proxyUrl}")
                 btn.innerText = "Extraer ahora";
             }
         }
-
         window.onload = init;
     </script>
 </body>
